@@ -1,0 +1,35 @@
+
+name: Blue Green Rollback
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blue-green-deployment
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    name: Rollback Production Traffic
+    runs-on: [self-hosted, macOS, X64]
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Execute rollback
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/rollback.sh
+
+      - name: Verify production health
+        run: |
+          curl --fail --silent --show-error http://localhost:8080/health
+
+      - name: Display active environment
+        run: |
+          curl --fail --silent --show-error http://localhost:8080/
