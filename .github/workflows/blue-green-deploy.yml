@@ -31,3 +31,7 @@ jobs:
               run: |
                 chmod +x scripts/*.sh
                 ./scripts/deploy.sh "${{ inputs.target }}"
+
+            - name: Verify production
+              run: | 
+                curl --fail --silent --show-error http://localhost:8080/health
