@@ -1,0 +1,33 @@
+name: Blue Green Deployment
+
+on:
+  workflow_dispatch:
+      inputs:
+          target:
+            description: "Inactive environment to deploy"
+            required: true
+            type: choice
+            options:
+                - blue
+                - green
+
+permissions: 
+    contents: read
+
+concurrency:
+    group: blue-green-deployment
+    cancel-in-progress: false
+
+jobs:
+    deploy:
+        name: Deploy to Inactive Environment
+        runs-on: [self-hosted, macOS, X64]
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Deploy and validate
+              run: |
+                chmod +x scripts/*.sh
+                ./scripts/deploy.sh "${{ inputs.target }}"
