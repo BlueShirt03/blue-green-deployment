@@ -32,6 +32,21 @@ jobs:
                 chmod +x scripts/*.sh
                 ./scripts/deploy.sh "${{ inputs.target }}"
 
-            - name: Verify production
+    promote:
+        name: Approve and Switch Production Traffic
+        needs: deploy
+        runs-on: [self-hosted, macOS, X64]
+        environment: production
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            
+            - name: Switch production traffic
               run: | 
+               chmod +x scripts/*.sh
+               ./scripts/switch.sh "${{ inputs.target }}"
+
+            - name: Verify production
+              run: |
                 curl --fail --silent --show-error http://localhost:8080/health
