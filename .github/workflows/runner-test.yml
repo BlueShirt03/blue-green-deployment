@@ -1,0 +1,25 @@
+name: Test Self-Hosted Runner
+
+on:
+    workflow_dispatch: 
+
+jobs:
+    runner-test:
+        runs-on: [self-hosted, macOS, X64]
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Verify runner
+              run: |
+                echo "Github Actions is running on:"
+                hostname
+                uname -s
+            
+            - name: Verify Docker
+              run: |
+                docker --version
+                docker compose version
+                docker info > /dev/null
+                echo "Docker is running successfully"
